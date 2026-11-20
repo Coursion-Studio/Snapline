@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Versions agree
+        shell: pwsh
+        run: ./tools/check-version.ps1
+
+      - name: Test
+        run: dotnet test Snapline.sln -c Release --logger "console;verbosity=normal"
+
+      - name: Build app and installer (unsigned)
+        shell: pwsh
+        run: ./build.ps1
+
+      - name: Upload build
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapline-unsigned
+          path: |
+            bin/Snapline.exe
+            bin/SnaplineSetup.exe
+          retention-days: 7

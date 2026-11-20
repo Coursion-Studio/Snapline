@@ -1,0 +1,177 @@
+<Window x:Class="Snapline.UI.TrayFlyout"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Snapline" WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="False" ResizeMode="NoResize" SizeToContent="WidthAndHeight"
+        FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="13" Foreground="{StaticResource Text}">
+  <Border x:Name="Card" Margin="18" Width="372" CornerRadius="16" Background="#F51C1C1E"
+          BorderBrush="#2CFFFFFF" BorderThickness="1" Padding="12">
+    <Border.Effect>
+      <DropShadowEffect BlurRadius="30" ShadowDepth="8" Direction="270" Opacity="0.55"/>
+    </Border.Effect>
+    <Border.RenderTransform>
+      <TranslateTransform x:Name="Slide"/>
+    </Border.RenderTransform>
+    <StackPanel>
+      <!-- Header -->
+      <Grid Margin="4,2,0,8">
+        <StackPanel Orientation="Horizontal">
+          <Border Width="30" Height="30" CornerRadius="9">
+            <Border.Background>
+              <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#5E5CE6" Offset="0"/>
+                <GradientStop Color="#0A84FF" Offset="1"/>
+              </LinearGradientBrush>
+            </Border.Background>
+            <Path Stroke="White" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Width="24" Height="24"
+                  Data="M6,10 V6 H10 M14,6 H18 V10 M18,14 V18 H14 M10,18 H6 V14 M11,12 A1,1 0 1 0 13,12 A1,1 0 1 0 11,12">
+              <Path.LayoutTransform><ScaleTransform ScaleX="0.85" ScaleY="0.85"/></Path.LayoutTransform>
+            </Path>
+          </Border>
+          <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+            <TextBlock Text="Snapline" FontSize="15" FontWeight="SemiBold"/>
+            <TextBlock x:Name="SubTitle" Text="Screenshots, recordings &amp; more" FontSize="11.5" Foreground="{StaticResource SubText}"/>
+          </StackPanel>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+          <Button Style="{StaticResource IconButton}" Content="&#xE838;" ToolTip="Open captures folder" Click="Folder_Click"/>
+          <Button Style="{StaticResource IconButton}" Content="&#xE713;" ToolTip="Settings" Click="Settings_Click"/>
+        </StackPanel>
+      </Grid>
+
+      <!-- Recording banner -->
+      <Border x:Name="RecBanner" Visibility="Collapsed" CornerRadius="10" Background="#33E5484D" BorderBrush="#66E5484D" BorderThickness="1" Padding="12,8" Margin="4,0,4,6">
+        <Grid>
+          <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+            <Ellipse Width="9" Height="9" Fill="#FF453A"/>
+            <TextBlock Text="Recording in progress" Margin="9,0,0,0" FontWeight="SemiBold"/>
+          </StackPanel>
+          <Button HorizontalAlignment="Right" Style="{StaticResource PrimaryButton}" Background="#E5484D" Padding="12,4" Content="Stop" Click="StopRec_Click"/>
+        </Grid>
+      </Border>
+
+      <!-- Actions -->
+      <UniformGrid Columns="2">
+        <Button Style="{StaticResource Tile}" Click="Area_Click">
+          <StackPanel Orientation="Horizontal">
+            <Border Width="32" Height="32" CornerRadius="9" Background="#260A84FF">
+              <Path Style="{StaticResource Ico}" Stroke="#4DA3FF" Data="M4,9 V4 H9 M15,4 H20 V9 M20,15 V20 H15 M9,20 H4 V15"/>
+            </Border>
+            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+              <TextBlock Text="Capture Area" FontWeight="SemiBold"/>
+              <TextBlock x:Name="AreaHint" Text="PrtSc · Ctrl+Shift+1" FontSize="11" Foreground="{StaticResource SubText}"/>
+            </StackPanel>
+          </StackPanel>
+        </Button>
+        <Button Style="{StaticResource Tile}" Click="Fullscreen_Click">
+          <StackPanel Orientation="Horizontal">
+            <Border Width="32" Height="32" CornerRadius="9" Background="#265E5CE6">
+              <Path Style="{StaticResource Ico}" Stroke="#8E8CFF" Data="M3,5 H21 V16 H3 Z M8,20 H16 M12,16 V20"/>
+            </Border>
+            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+              <TextBlock Text="Fullscreen" FontWeight="SemiBold"/>
+              <TextBlock Text="Ctrl+Shift+2" FontSize="11" Foreground="{StaticResource SubText}"/>
+            </StackPanel>
+          </StackPanel>
+        </Button>
+        <Button Style="{StaticResource Tile}" Click="Window_Click">
+          <StackPanel Orientation="Horizontal">
+            <Border Width="32" Height="32" CornerRadius="9" Background="#2630D158">
+              <Path Style="{StaticResource Ico}" Stroke="#4FE07A" Data="M3,5 H21 V19 H3 Z M3,9 H21 M6,7 H6.01 M8.5,7 H8.51"/>
+            </Border>
+            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+              <TextBlock Text="Window" FontWeight="SemiBold"/>
+              <TextBlock Text="Ctrl+Shift+W" FontSize="11" Foreground="{StaticResource SubText}"/>
+            </StackPanel>
+          </StackPanel>
+        </Button>
+        <Button Style="{StaticResource Tile}" Click="Previous_Click">
+          <StackPanel Orientation="Horizontal">
+            <Border Width="32" Height="32" CornerRadius="9" Background="#26FF9F0A">
+              <Path Style="{StaticResource Ico}" Stroke="#FFB340" Data="M4,9 V4 H9 M15,4 H20 V9 M20,15 V20 H15 M9,20 H4 V15 M12,8 V12 L14.5,13.5"/>
+            </Border>
+            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+              <TextBlock Text="Previous Area" FontWeight="SemiBold"/>
+              <TextBlock Text="Ctrl+Shift+3" FontSize="11" Foreground="{StaticResource SubText}"/>
+            </StackPanel>
+          </StackPanel>
+        </Button>
+        <Button Style="{StaticResource Tile}" Click="Video_Click">
+          <StackPanel Orientation="Horizontal">
+            <Border Width="32" Height="32" CornerRadius="9" Background="#26FF453A">
+              <Path Style="{StaticResource Ico}" Stroke="#FF6961" Data="M3,7 H15 V17 H3 Z M15,11 L21,7 V17 L15,13"/>
+            </Border>
+            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+              <TextBlock Text="Record Video" FontWeight="SemiBold"/>
+              <TextBlock Text="Ctrl+Shift+4" FontSize="11" Foreground="{StaticResource SubText}"/>
+            </StackPanel>
+          </StackPanel>
+        </Button>
+        <Button Style="{StaticResource Tile}" Click="Gif_Click">
+          <StackPanel Orientation="Horizontal">
+            <Border Width="32" Height="32" CornerRadius="9" Background="#26FF375F">
+              <TextBlock Text="GIF" FontWeight="Bold" FontSize="10.5" Foreground="#FF6482" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+              <TextBlock Text="Record GIF" FontWeight="SemiBold"/>
+              <TextBlock Text="Ctrl+Shift+5" FontSize="11" Foreground="{StaticResource SubText}"/>
+            </StackPanel>
+          </StackPanel>
+        </Button>
+        <Button Style="{StaticResource Tile}" Click="Text_Click">
+          <StackPanel Orientation="Horizontal">
+            <Border Width="32" Height="32" CornerRadius="9" Background="#2664D2FF">
+              <Path Style="{StaticResource Ico}" Stroke="#64D2FF" Data="M4,9 V4 H9 M15,4 H20 V9 M20,15 V20 H15 M9,20 H4 V15 M8.5,9 H15.5 M12,9 V16"/>
+            </Border>
+            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+              <TextBlock Text="Capture Text" FontWeight="SemiBold"/>
+              <TextBlock Text="Ctrl+Shift+6" FontSize="11" Foreground="{StaticResource SubText}"/>
+            </StackPanel>
+          </StackPanel>
+        </Button>
+        <Button Style="{StaticResource Tile}" Click="Combine_Click">
+          <StackPanel Orientation="Horizontal">
+            <Border Width="32" Height="32" CornerRadius="9" Background="#26BF5AF2">
+              <Path Style="{StaticResource Ico}" Stroke="#DA8FFF" Data="M4,4 H10.5 V10.5 H4 Z M13.5,4 H20 V10.5 H13.5 Z M4,13.5 H10.5 V20 H4 Z M13.5,13.5 H20 V20 H13.5 Z"/>
+            </Border>
+            <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+              <TextBlock Text="Combine" FontWeight="SemiBold"/>
+              <TextBlock Text="Ctrl+Shift+7" FontSize="11" Foreground="{StaticResource SubText}"/>
+            </StackPanel>
+          </StackPanel>
+        </Button>
+      </UniformGrid>
+
+      <!-- Recent -->
+      <Grid Margin="6,12,6,6">
+        <TextBlock Text="RECENT" Style="{StaticResource Caption}" Margin="0"/>
+        <TextBlock x:Name="RecentHint" Text="Click to annotate" HorizontalAlignment="Right" FontSize="11" Foreground="{StaticResource SubText}"/>
+      </Grid>
+      <ScrollViewer x:Name="RecentScroll" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled" Margin="4,0,4,4" PreviewMouseWheel="Recent_Wheel">
+        <ItemsControl x:Name="RecentList">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate><StackPanel Orientation="Horizontal"/></ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Button Style="{StaticResource ThumbButton}" Margin="0,0,8,0" Click="Recent_Click" Tag="{Binding}" ToolTip="Open in editor">
+                <Border Width="78" Height="50" CornerRadius="6">
+                  <Border.Background>
+                    <ImageBrush ImageSource="{Binding Image}" Stretch="UniformToFill"/>
+                  </Border.Background>
+                </Border>
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+      <TextBlock x:Name="RecentEmpty" Text="Your captures from this session will appear here." Foreground="{StaticResource SubText}" FontSize="12" Margin="6,2,6,8"/>
+
+      <!-- Footer -->
+      <Grid Margin="6,10,2,0">
+        <TextBlock x:Name="FooterHint" Text="Print Screen anywhere to capture" FontSize="11" Foreground="{StaticResource SubText}" VerticalAlignment="Center"/>
+        <Button HorizontalAlignment="Right" Style="{StaticResource SecondaryButton}" Padding="12,4" Content="Quit" Click="Quit_Click"/>
+      </Grid>
+    </StackPanel>
+  </Border>
+</Window>

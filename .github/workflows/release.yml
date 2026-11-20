@@ -1,0 +1,146 @@
+# Builds, tests, signs and drafts a release when a v* tag is pushed.
+#
+# Order matters: the app is signed BEFORE it goes into the installer, the installer is signed after,
+# and checksums are written last, so every published file and .sha256 matches the signed bytes.
+#
+# Code signing uses SignPath (free for open source; certificate issued to SignPath Foundation) and stays
+# off until the project is approved: set the repository variable SIGNING to "signpath" to switch it on.
+# With signing off, this workflow still builds, tests and drafts an unsigned release.
+#
+# The release is created as a DRAFT. The update feed (update.json) is signed with the maintainer's private
+# update key, which never leaves their PC, so the last step is local: tools\finish-release.ps1 vX.Y.Z
+# signs the feed, uploads it and publishes the release. See docs/RELEASING.md.
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write   # create the draft release
+  actions: read     # SignPath reads this run's artifacts
+
+jobs:
+  release:
+    runs-on: windows-latest
+    env:
+      SIGN: ${{ vars.SIGNING == 'signpath' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Tag, app, installer and changelog agree
+        id: version
+        shell: pwsh
+        run: |
+          $v = ./tools/check-version.ps1 -Tag '${{ github.ref_name }}'
+          "version=$v" >> $env:GITHUB_OUTPUT
+
+      - name: Test
+        run: dotnet test Snapline.sln -c Release
+
+      - name: Build app
+        shell: pwsh
+        run: |
+          dotnet publish Snapline/Snapline.csproj -c Release -r win-x64 --self-contained -p:PublishSingleFile=true -o obj/publish --nologo
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          New-Item -ItemType Directory -Force bin | Out-Null
+          Copy-Item obj/publish/Snapline.exe bin/Snapline.exe
+
+      # ---- sign the app (before it is packed into the installer)
+      - name: Upload app for signing
+        id: app-unsigned
+        if: vars.SIGNING == 'signpath'
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-unsigned
+          path: bin/Snapline.exe
+
+      - name: Sign app (SignPath)
+        if: vars.SIGNING == 'signpath'
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: app
+          github-artifact-id: ${{ steps.app-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed/app
+
+      - name: Use signed app
+        if: vars.SIGNING == 'signpath'
+        shell: pwsh
+        run: Copy-Item signed/app/Snapline.exe bin/Snapline.exe -Force
+
+      # ---- installer with the signed app inside, then sign the installer
+      - name: Build installer
+        shell: pwsh
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File build-setup.ps1
+
+      - name: Upload installer for signing
+        id: setup-unsigned
+        if: vars.SIGNING == 'signpath'
+        uses: actions/upload-artifact@v4
+        with:
+          name: setup-unsigned
+          path: bin/SnaplineSetup.exe
+
+      - name: Sign installer (SignPath)
+        if: vars.SIGNING == 'signpath'
+        uses: signpath/github-action-submit-signing-request@v3
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: ${{ vars.SIGNPATH_PROJECT_SLUG }}
+          signing-policy-slug: ${{ vars.SIGNPATH_SIGNING_POLICY_SLUG }}
+          artifact-configuration-slug: installer
+          github-artifact-id: ${{ steps.setup-unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed/setup
+
+      - name: Use signed installer
+        if: vars.SIGNING == 'signpath'
+        shell: pwsh
+        run: Copy-Item signed/setup/SnaplineSetup.exe bin/SnaplineSetup.exe -Force
+
+      - name: Check signatures
+        if: vars.SIGNING == 'signpath'
+        shell: pwsh
+        run: |
+          foreach ($f in 'bin/Snapline.exe', 'bin/SnaplineSetup.exe') {
+            $s = Get-AuthenticodeSignature $f
+            "$f : $($s.Status) $($s.SignerCertificate.Subject)"
+            if ($s.Status -ne 'Valid') { throw "$f is not validly signed" }
+          }
+
+      # ---- pack and checksum the final (signed) files
+      - name: Pack
+        shell: pwsh
+        run: |
+          $v = '${{ steps.version.outputs.version }}'
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Copy-Item bin/SnaplineSetup.exe "dist/SnaplineSetup-$v.exe"
+          $stage = New-Item -ItemType Directory -Force "obj/portable"
+          Copy-Item bin/Snapline.exe, LICENSE.md $stage
+          Compress-Archive -Path "$stage/*" -DestinationPath "dist/Snapline-$v-portable.zip" -Force
+          foreach ($f in Get-ChildItem dist -File) {
+            $h = (Get-FileHash $f.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+            [IO.File]::WriteAllText("$($f.FullName).sha256", "$h  $($f.Name)")
+          }
+          Get-ChildItem dist | Format-Table Name, Length
+
+      - name: Draft release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $v = '${{ steps.version.outputs.version }}'
+          $notes = ./tools/release-notes.ps1 -Version $v
+          $signed = if ($env:SIGN -eq 'true') { '' } else { "`n`n> This build isn't code-signed yet. If Windows says ""Windows protected your PC"", click **More info → Run anyway**." }
+          [IO.File]::WriteAllText("$PWD/notes.md", $notes + $signed)
+          gh release create '${{ github.ref_name }}' (Get-ChildItem dist -File).FullName --draft --title "Snapline for Windows $v" --notes-file notes.md

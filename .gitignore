@@ -1,0 +1,9 @@
+bin/
+obj/
+dist/
+Snapline/bin/
+Snapline/obj/
+*.user
+.vs/
+# never commit the update signing key
+*-update.xml

@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon Condition="Exists('..\assets\app.ico')">..\assets\app.ico</ApplicationIcon>
+    <RootNamespace>Snapline</RootNamespace>
+    <AssemblyName>Snapline</AssemblyName>
+    <NoWarn>CA1416;WFAC010;SYSLIB0014</NoWarn>
+
+    <!-- Keep in step with setup\Installer.cs and the top of CHANGELOG.md -->
+    <Version>1.0.1</Version>
+    <Product>Snapline for Windows</Product>
+    <Company>Coursion Studio</Company>
+    <Copyright>Copyright © 2026 Coursion Studio. MIT licence.</Copyright>
+    <Description>Snapline — screenshots, recordings and annotations</Description>
+
+    <!-- build.ps1 publishes one self-contained exe (win-x64, self-contained, single file), so users don't need .NET installed -->
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\LICENSE.md" LogicalName="Snapline.LICENSE.md" />
+    <InternalsVisibleTo Include="Snapline.Tests" />
+  </ItemGroup>
+</Project>

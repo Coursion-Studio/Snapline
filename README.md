@@ -7,7 +7,8 @@
   <a href="https://github.com/Coursion-Studio/Snapline/releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/Coursion-Studio/Snapline/total?style=flat-square&color=f0529c"></a>
   <img alt="Windows 10 / 11" src="https://img.shields.io/badge/Windows-10%20%7C%2011-0078d4?style=flat-square&logo=windows">
   <img alt="No admin needed" src="https://img.shields.io/badge/admin-not%20needed-2ecc71?style=flat-square">
-  <a href="LICENSE.md"><img alt="Proprietary licence" src="https://img.shields.io/badge/licence-proprietary-4b0082?style=flat-square"></a>
+  <a href="LICENSE.md"><img alt="MIT licence" src="https://img.shields.io/badge/licence-MIT-2ecc71?style=flat-square"></a>
+  <a href="https://github.com/Coursion-Studio/Snapline/actions/workflows/ci.yml"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/Coursion-Studio/Snapline/ci.yml?branch=main&style=flat-square&label=build"></a>
 </p>
 
 <p align="center">
@@ -22,6 +23,7 @@
   &nbsp;·&nbsp; <a href="#-screenshots">Screenshots</a>
   &nbsp;·&nbsp; <a href="#%EF%B8%8F-shortcuts">Shortcuts</a>
   &nbsp;·&nbsp; <a href="#-faq">FAQ</a>
+  &nbsp;·&nbsp; <a href="#%EF%B8%8F-build-from-source">Build from source</a>
 </p>
 
 ---
@@ -58,7 +60,7 @@ with one click. Every update is signed by Coursion Studio.
 | 🔤 **Copy text from the screen** | Drag over any text, even in an image or video, and it's copied as text. |
 | 📌 **Pin and drag** | Pin a capture so it floats above other windows, or drag it straight into a chat, email or document. |
 | 🔄 **Automatic updates** | Checks once a day, shows what's new, and installs with one click. Every update is signed by Coursion Studio. |
-| 🔒 **Private** | Runs entirely on your PC. No account, no analytics, no telemetry. The only network call is the daily update check. |
+| 🔒 **Private and open source** | Runs entirely on your PC. No account, no analytics, no telemetry. The only network call is the daily update check. MIT licensed. |
 
 ## 📸 Screenshots
 
@@ -121,12 +123,44 @@ No. Captures, recordings and text recognition stay on your PC. The only thing Sn
 information once a day, and you can turn that off in **Settings… → Updates**.
 </details>
 
+## 🛠️ Build from source
+
+You need Windows 10 or 11 and the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+
+```powershell
+git clone https://github.com/Coursion-Studio/Snapline.git
+cd Snapline
+dotnet test Snapline.sln          # unit tests
+.\build.ps1                       # bin\Snapline.exe and bin\SnaplineSetup.exe
+```
+
+`bin\Snapline.exe` is a single self-contained file, so it runs without installing .NET. The installer is
+compiled with the C# compiler that ships with Windows, so it needs nothing extra either.
+
+| Folder | What's in it |
+|---|---|
+| `Snapline/Core` | capture, recording (MP4 and GIF), text recognition, hotkeys, Print Screen, settings |
+| `Snapline/UI`, `Snapline/Editor` | capture overlay, preview cards, editor, combine, tray panel, settings |
+| `Snapline/Shared` | Snapline's small UI toolkit, shared with the installer |
+| `Snapline/Updates` | update check, download and signature verification |
+| `setup` | per-user installer and uninstaller |
+| `tests` | unit tests |
+| `tools` | release and signing scripts ([docs/RELEASING.md](docs/RELEASING.md)) |
+
+Every push is built and tested by [GitHub Actions](https://github.com/Coursion-Studio/Snapline/actions).
+
+## 🔏 Code signing
+
+Snapline has applied for free code signing for open-source projects: signing by [SignPath.io](https://about.signpath.io),
+certificate by [SignPath Foundation](https://signpath.org). Until that's approved, releases are unsigned and Windows
+shows a SmartScreen warning the first time you run the installer. The [code signing policy](CODE_SIGNING_POLICY.md)
+explains who builds, approves and signs releases.
+
 ## 🐛 Issues & feedback
 
-Open an issue on this repo, or email [support@coursion.studio](mailto:support@coursion.studio).
-The source code lives in a private repo. This one hosts the releases, the update feed and this page.
+[Open an issue](https://github.com/Coursion-Studio/Snapline/issues), or email
+[support@coursion.studio](mailto:support@coursion.studio). Pull requests are welcome.
 
 ## 📄 Licence
 
-Proprietary. See [LICENSE.md](LICENSE.md). © 2026 Coursion Studio. All rights reserved.
-Questions: [support@coursion.studio](mailto:support@coursion.studio) · [coursion.studio](https://coursion.studio)
+[MIT](LICENSE.md). © 2026 Coursion Studio · [coursion.studio](https://coursion.studio)
