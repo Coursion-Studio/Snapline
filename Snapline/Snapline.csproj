@@ -14,7 +14,7 @@
     <NoWarn>CA1416;WFAC010;SYSLIB0014</NoWarn>
 
     <!-- Keep in step with setup\Installer.cs and the top of CHANGELOG.md -->
-    <Version>1.0.1</Version>
+    <Version>1.1.0</Version>
     <Product>Snapline for Windows</Product>
     <Company>Coursion Studio</Company>
     <Copyright>Copyright © 2026 Coursion Studio. MIT licence.</Copyright>

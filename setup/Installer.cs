@@ -10,15 +10,15 @@ using Microsoft.Win32;
 [assembly: AssemblyProduct("Snapline for Windows")]
 [assembly: AssemblyCompany("Coursion Studio")]
 [assembly: AssemblyCopyright("Copyright © 2026 Coursion Studio. MIT licence.")]
-[assembly: AssemblyVersion("1.0.1.0")]
-[assembly: AssemblyFileVersion("1.0.1.0")]
+[assembly: AssemblyVersion("1.1.0.0")]
+[assembly: AssemblyFileVersion("1.1.0.0")]
 
 // Per-user install: no admin rights, nothing outside the user's profile.
 // Payload files are embedded as resources named "payload.<file name>" (see build-setup.ps1).
 static class Installer
 {
     public const string AppName = "Snapline";
-    public const string Version = "1.0.1";
+    public const string Version = "1.1.0";
     const string ProcessName = "Snapline";                 // running app to close before installing
     const string ExeName = "Snapline.exe";
     static readonly string[] Files = { "Snapline.exe" };

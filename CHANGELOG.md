@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.1.0 — 2026-11-20
+- **Snapline is now open source** under the MIT licence. The source code is on GitHub.
+- **Refreshed settings, tray menu and update window** in Snapline's own blue look.
+- **A portable version** is attached to each release, if you'd rather not install.
+
 ## 1.0.1 — 2026-11-20
 - **Cleaner capture screen.** The magnifier next to the cursor is gone, so nothing covers what you're selecting.
 
