@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.0.1 — 2026-11-20
+- **Cleaner capture screen.** The magnifier next to the cursor is gone, so nothing covers what you're selecting.
+
 ## 1.0.0 — 2026-11-20
 - **Capture anything with Print Screen.** Drag an area or click a window; the capture is copied and waits in a preview card in the corner.
 - **Record video and GIFs** of any part of the screen, with an optional countdown and the mouse pointer shown.
