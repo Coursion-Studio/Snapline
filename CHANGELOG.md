@@ -1,0 +1,9 @@
+# Changelog
+
+## 1.0.0 — 2026-11-20
+- **Capture anything with Print Screen.** Drag an area or click a window; the capture is copied and waits in a preview card in the corner.
+- **Record video and GIFs** of any part of the screen, with an optional countdown and the mouse pointer shown.
+- **Annotate** with arrows, boxes, text, numbered steps, highlights and blur, then copy, save or pin the result.
+- **Combine screenshots** side by side or in a grid, on a coloured background.
+- **Copy text from the screen** with built-in text recognition.
+- **Settings window and tray menu.** Right-click the tray icon for everything; updates install after you say yes.
